@@ -1,16 +1,32 @@
-# Dockerfile
-
-# Use OpenJDK 17 base image
-FROM openjdk:17-jdk-slim
+# ---------- Stage 1: Build the application ----------
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 
 # Set working directory
 WORKDIR /app
 
-# Copy the Maven build artifact
-COPY target/*.jar app.jar
+# Copy pom.xml and download dependencies
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
-# Expose port
+# Copy the full source and build the project
+COPY . .
+RUN mvn clean package -DskipTests
+
+# ---------- Stage 2: Run the application ----------
+FROM eclipse-temurin:17-jdk-alpine
+
+# Add non-root user for security
+RUN addgroup -S spring && adduser -S spring -G spring
+USER spring:spring
+
+# Set working directory
+WORKDIR /home/spring
+
+# Copy the built jar from the previous stage
+COPY --from=build /app/target/*.jar app.jar
+
+# Expose application port
 EXPOSE 8080
 
-# Run the application
+# Start the Spring Boot app
 ENTRYPOINT ["java", "-jar", "app.jar"]
