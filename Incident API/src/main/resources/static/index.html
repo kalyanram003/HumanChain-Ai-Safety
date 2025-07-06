@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Incident Log API</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --secondary-color: #1e40af;
+      --background-color: #f8fafc;
+      --text-color: #1e293b;
+      --border-color: #e2e8f0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 3rem 0;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    .section-title {
+      color: var(--primary-color);
+      font-size: 1.5rem;
+      margin: 2rem 0 1rem;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 0.5rem;
+    }
+
+    form {
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      max-width: 600px;
+      margin: 1rem auto;
+    }
+
+    input, textarea, select, button {
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      font-size: 1rem;
+    }
+
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .incident-list {
+      max-width: 800px;
+      margin: 2rem auto;
+    }
+
+    .incident {
+      background-color: white;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid var(--primary-color);
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .endpoint {
+      background: white;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .method {
+      display: inline-block;
+      font-weight: 600;
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+    }
+
+    .method.get { background-color: #dcfce7; color: #166534; }
+    .method.post { background-color: #dbeafe; color: #1e40af; }
+    .method.delete { background-color: #fee2e2; color: #991b1b; }
+
+    .url {
+      font-family: 'Fira Code', monospace;
+      background: var(--background-color);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      display: inline-block;
+      margin: 0.5rem 0;
+      font-size: 0.9rem;
+    }
+
+    .description { margin: 1rem 0; color: #64748b; }
+
+    .example {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.9rem;
+      overflow-x: auto;
+    }
+
+    .notes {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-top: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .notes h2 {
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+
+    .notes ul { list-style: none; }
+    .notes li {
+      margin: 0.5rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .notes li:before {
+      content: "•";
+      color: var(--primary-color);
+      position: absolute;
+      left: 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Incident Log API</h1>
+      <p class="subtitle">A RESTful API for managing incident logs</p>
+    </div>
+  </header>
+
+  <div class="container">
+    <h2 class="section-title">Live Incident Form</h2>
+    <form id="incident-form">
+      <input type="text" id="title" placeholder="Title" required />
+      <textarea id="description" placeholder="Description" required></textarea>
+      <select id="severity">
+        <option>Low</option>
+        <option>Medium</option>
+        <option>High</option>
+      </select>
+      <button type="submit">Submit Incident</button>
+    </form>
+
+    <h2 class="section-title">Live Incident List</h2>
+    <div class="incident-list" id="incident-list"></div>
+
+    <h2 class="section-title">API Documentation</h2>
+
+    <div class="endpoint">
+      <div class="method get">GET</div>
+      <div class="url">/incidents</div>
+      <div class="description">Retrieve all incidents from the database</div>
+      <div class="example">
+        curl -X GET /incidents
+      </div>
+    </div>
+
+    <div class="endpoint">
+      <div class="method post">POST</div>
+      <div class="url">/incidents</div>
+      <div class="description">Create a new incident in the database</div>
+      <div class="example">
+        curl -X POST /incidents \<br>
+        -H "Content-Type: application/json" \<br>
+        -d '{"title": "Server Down", "description": "Main server is not responding", "severity": "High"}'
+      </div>
+    </div>
+
+    <div class="endpoint">
+      <div class="method get">GET</div>
+      <div class="url">/incidents/&lt;id&gt;</div>
+      <div class="description">Retrieve a specific incident by its ID</div>
+      <div class="example">
+        curl -X GET /incidents/1
+      </div>
+    </div>
+
+    <div class="endpoint">
+      <div class="method delete">DELETE</div>
+      <div class="url">/incidents/&lt;id&gt;</div>
+      <div class="description">Delete a specific incident by its ID</div>
+      <div class="example">
+        curl -X DELETE /incidents/1
+      </div>
+    </div>
+
+    <div class="notes">
+      <h2>Important Notes</h2>
+      <ul>
+        <li>Severity levels must be one of: Low, Medium, High</li>
+        <li>All requests and responses are in JSON format</li>
+        <li>Title and description must be strings</li>
+        <li>All endpoints require proper authentication</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('incident-form');
+    const list = document.getElementById('incident-list');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('title').value;
+      const description = document.getElementById('description').value;
+      const severity = document.getElementById('severity').value;
+
+      const response = await fetch('/incidents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, description, severity })
+      });
+
+      if (response.ok) {
+        form.reset();
+        fetchIncidents();
+      } else {
+        alert('Failed to submit incident.');
+      }
+    });
+
+    async function fetchIncidents() {
+      try {
+        const res = await fetch('/incidents');
+        const data = await res.json();
+        list.innerHTML = '';
+
+        data.forEach((incident) => {
+          const div = document.createElement('div');
+          div.className = 'incident';
+          div.innerHTML = `
+            <h3>${incident.title}</h3>
+            <p>${incident.description}</p>
+            <small>Severity: ${incident.severity}</small>
+          `;
+          list.appendChild(div);
+        });
+      } catch (err) {
+        console.error('Error loading incidents', err);
+      }
+    }
+
+    fetchIncidents();
+  </script>
+</body>
+</html>

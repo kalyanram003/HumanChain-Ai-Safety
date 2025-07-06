@@ -1,0 +1,4 @@
+INSERT INTO incidents (title, description, severity, reported_at) VALUES
+('Model Hallucination in Medical Diagnosis', 'AI model provided incorrect medical diagnosis with high confidence, potentially leading to harmful patient outcomes.', 'High', '2024-04-01T10:00:00'),
+('Bias in Hiring Algorithm', 'Recruitment AI showed gender bias in candidate screening, favoring male candidates for technical roles.', 'Medium', '2024-04-02T14:30:00'),
+('Prompt Injection Vulnerability', 'User successfully bypassed safety filters through creative prompt engineering, exposing system prompt.', 'High', '2024-04-03T09:15:00'); 
