@@ -35,5 +35,5 @@ jobs:
           push: true
           no-cache: true
           tags: |
-            kalyanram003/humanchain-ai-safety:latest
-            kalyanram003/humanchain-ai-safety:${{ github.sha }}
+            kalyanramn/humanchain-ai-safety:latest
+            kalyanramn/humanchain-ai-safety:${{ github.sha }}
