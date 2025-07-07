@@ -1,31 +1,33 @@
-# -------- Stage 1: Build using Maven Wrapper --------
-FROM eclipse-temurin:21-jdk AS builder
+# -------- Stage 1: Build the application with Maven --------
+FROM eclipse-temurin:21-jdk as builder
 
-# Set working directory
+# Set working directory inside the container
 WORKDIR /app
 
-# Copy Maven wrapper files and project source
+# Copy Maven wrapper and project files
 COPY .mvn .mvn
 COPY mvnw pom.xml ./
 RUN chmod +x mvnw
+
+# Download dependencies (offline build speed-up)
 RUN ./mvnw dependency:go-offline
 
 # Copy the rest of the source code
 COPY src ./src
 
-# Build the application
+# Build the Spring Boot application (skip tests for speed)
 RUN ./mvnw clean package -DskipTests
 
-# -------- Stage 2: Create minimal runtime image --------
-FROM eclipse-temurin:21-jdk-slim
+# -------- Stage 2: Run the application with only the JAR --------
+FROM eclipse-temurin:21-jdk
 
-# Set working directory
+# Set working directory inside the container
 WORKDIR /app
 
-# Copy the built JAR from the builder stage
+# Copy built JAR from previous stage
 COPY --from=builder /app/target/*.jar app.jar
 
-# Expose the Spring Boot port
+# Expose Spring Boot's default port
 EXPOSE 8080
 
 # Start the Spring Boot application
