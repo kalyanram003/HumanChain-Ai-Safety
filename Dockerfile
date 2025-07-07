@@ -1,14 +1,32 @@
-# Use OpenJDK 21 base image
-FROM openjdk:21-jdk-slim
+# -------- Stage 1: Build using Maven Wrapper --------
+FROM eclipse-temurin:21-jdk AS builder
 
 # Set working directory
 WORKDIR /app
 
-# Copy the JAR file
-COPY target/*.jar app.jar
+# Copy Maven wrapper files and project source
+COPY .mvn .mvn
+COPY mvnw pom.xml ./
+RUN chmod +x mvnw
+RUN ./mvnw dependency:go-offline
 
-# Expose port used by Spring Boot
+# Copy the rest of the source code
+COPY src ./src
+
+# Build the application
+RUN ./mvnw clean package -DskipTests
+
+# -------- Stage 2: Create minimal runtime image --------
+FROM eclipse-temurin:21-jdk-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy the built JAR from the builder stage
+COPY --from=builder /app/target/*.jar app.jar
+
+# Expose the Spring Boot port
 EXPOSE 8080
 
-# Start the application
+# Start the Spring Boot application
 ENTRYPOINT ["java", "-jar", "app.jar"]
